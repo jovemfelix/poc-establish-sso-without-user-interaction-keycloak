@@ -1,0 +1,29 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+actor Alice
+
+box "Legacy System"
+    control     login     as login
+    boundary    FrontEnd1
+end box
+
+box "New Architecture" #LightBlue
+    control     "RH-SSO 7.4" as keycloak 
+    boundary    FrontEnd2
+end box
+
+
+Alice -> login: Authentication Request (username, password)
+login --> Alice: Sucessfull Authentication Response
+
+Alice -> FrontEnd1: navigate to a integration page
+Alice -> FrontEnd1: click button to Navigate to FrontEnd2
+FrontEnd1 -> FrontEnd1: create SSO authentication
+FrontEnd1 -> keycloak: call url /protocol/openid-connect/token (grant_type=password, username, password)
+FrontEnd1 <-- keycloak: OIDC TOKEN
+FrontEnd1 -> FrontEnd2: navigate to main page (TOKEN)
+Alice <-- FrontEnd2: show main page authenticated
+@enduml
